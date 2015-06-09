@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.concurrent.Semaphore;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -36,6 +37,7 @@ public class Main extends JFrame implements ActionListener,
 	private JPanel panel, panel_1;
 	private Component verticalGlue_1;
 	private SerialConnection serialConnection;
+	private final Semaphore sem = new Semaphore(0);
 
 	/**
 	 * Launch the application.
@@ -206,31 +208,43 @@ public class Main extends JFrame implements ActionListener,
 	}
 
 	private void customProgram() {
-		try {
-			/*eventuell als eigener Thread weil er auf Antwort warten muss*/
-			/*init routine*/
-			serialConnection.connect();
-			/*set UART Parameters for RFID Chip*/
-			serialConnection.writeSerial("Hello UART.");
-			/*check response*/
-			
-			/*read readers id*/
-			serialConnection.writeSerial("UART Hello again.");
-			/*check response*/
-			
-			/*logic routine*/
-			/*check if chip is in area OR read now OR write now*/
-			
-			/*check response*/
-			
-			// Thread.sleep(3000);
-			/*closing routine*/
-			// serialConnection.close();
-			//JOptionPane.showMessageDialog(this, "Programm finished.");
+		/* eventuell als eigener Thread weil er auf Antwort warten muss */
+		(new Thread(new customProgThread())).start();
+	}
 
-		} catch (Exception e) {
-			this.writeLog(e.getMessage());
-			e.printStackTrace();
+	public class customProgThread implements Runnable {
+
+		public customProgThread() {
+		}
+
+		public void run() {
+			try {
+				/* init routine */
+				serialConnection.connect();
+				/* set UART Parameters for RFID Chip */
+				serialConnection.writeSerial("Hello UART.");
+				sem.acquire(); // lock sem - wait for parseInput() to release
+				/* check response */
+
+				/* read readers id */
+				serialConnection.writeSerial("UART Hello again.");
+				sem.acquire(); // lock sem - wait for parseInput() to release
+				/* check response */
+
+				/* logic routine */
+				/* check if chip is in area OR read now OR write now */
+
+				/* check response */
+
+				// Thread.sleep(3000);
+				/* closing routine */
+				// serialConnection.close();
+				// JOptionPane.showMessageDialog(this, "Programm finished.");
+
+			} catch (Exception e) {
+				writeLog(e.getMessage());
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -245,7 +259,7 @@ public class Main extends JFrame implements ActionListener,
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void closeOperation() {
 		if (serialConnection.isConnected()) {
 			try {
@@ -258,10 +272,18 @@ public class Main extends JFrame implements ActionListener,
 		System.exit(0);
 	}
 
+	/**
+	 * this cold emulate middleware and filter input (if Tag ID hasnt changed)
+	 */
 	@Override
 	public void parseInput(String msg) {
 		inputTextField.setText("");
 		inputTextField.setText(msg);
+		// falls send von GUI direkt aufgerufen wurde
+		if (sem.availablePermits() > 0)
+			return;
+		// ansonsten kommuniziere mit customThread
+		sem.release();// release sem
 	}
 
 	@Override
