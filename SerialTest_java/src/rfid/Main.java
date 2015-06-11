@@ -225,12 +225,16 @@ public class Main extends JFrame implements ActionListener,
 				serialConnection.writeSerial("Hello UART.");
 				sem.acquire(); // lock sem - wait for parseInput() to release
 				/* check response */
-
+				if (!inputTextField.getText().equals("Hello UART.")) {
+					System.out.println("Couldnt write Parameters!");
+				}
 				/* read readers id */
 				serialConnection.writeSerial("UART Hello again.");
 				sem.acquire(); // lock sem - wait for parseInput() to release
 				/* check response */
-
+				if (!inputTextField.getText().equals("UART Hello again.")) {
+					System.out.println("Couldnt check readers ID!");
+				}
 				/* logic routine */
 				/* check if chip is in area OR read now OR write now */
 
