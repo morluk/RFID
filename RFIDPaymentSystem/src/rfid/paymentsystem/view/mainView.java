@@ -19,10 +19,13 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+
+import rfid.paymentsystem.seriell.SerialConnection;
 
 public class mainView extends JFrame implements ActionListener {
 
@@ -35,6 +38,7 @@ public class mainView extends JFrame implements ActionListener {
 	private JMenu mnFile, mnEdit;
 	private JMenuItem mntmOpenConnection, mntmIsConnected, mntmCloseConnection, mntmExit,
 			mntmSettings;
+	private SerialConnection serialConnection;
 
 	/**
 	 * Launch the application.
@@ -56,6 +60,7 @@ public class mainView extends JFrame implements ActionListener {
 	 * Create the frame.
 	 */
 	public mainView() {
+		serialConnection = new SerialConnection();
 		initGui();
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
@@ -171,6 +176,13 @@ public class mainView extends JFrame implements ActionListener {
 	}
 	
 	public void closeOperation() {
+		if (serialConnection.isConnected()) {
+			try {
+				serialConnection.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		System.exit(0);
 	}
 
@@ -183,19 +195,36 @@ public class mainView extends JFrame implements ActionListener {
 			
 		}
 		if (e.getSource() == mntmOpenConnection) {
-
+			try {
+				if (serialConnection.connect()) {
+					JOptionPane.showMessageDialog(this,
+							"Connection established.");
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 		if (e.getSource() == mntmCloseConnection) {
-
+			try {
+				if (serialConnection.close()) {
+					JOptionPane.showMessageDialog(this, "Connection closed.");
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 		if (e.getSource() == mntmIsConnected) {
-
+			if (serialConnection.isConnected()) {
+				JOptionPane.showMessageDialog(this, "Connection open.");
+			} else {
+				JOptionPane.showMessageDialog(this, "Connection closed.");
+			}
 		}
 		if (e.getSource() == mntmExit) {
 			closeOperation();
 		}
 		if (e.getSource() == mntmSettings) {
-			Settings dialog = new Settings();
+			Settings dialog = new Settings(serialConnection);
 			dialog.setLocationRelativeTo(this);
 			dialog.setVisible(true);
 		}

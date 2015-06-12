@@ -15,6 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import rfid.paymentsystem.seriell.SerialConnection;
+
 public class Settings extends JDialog implements ActionListener {
 
 	private final JPanel contentPanel = new JPanel();
@@ -25,12 +27,20 @@ public class Settings extends JDialog implements ActionListener {
 	private JTextField parityText;
 	private JTextField delayText;
 	JButton cancelButton, okButton;
+	private SerialConnection serialConnection;
 
 	/**
 	 * Create the dialog.
 	 */
-	public Settings() {
+	public Settings(SerialConnection conn) {
+		this.serialConnection = conn;
 		initLayout();
+		deviceText.setText(serialConnection.getDevice());
+		baudText.setText(new Integer(serialConnection.getBaudRate()).toString());
+		stopText.setText(new Integer(serialConnection.getStopBit()).toString());
+		dataText.setText(new Integer(serialConnection.getDatabits()).toString());
+		parityText.setText(new Integer(serialConnection.getParityBit()).toString());
+		delayText.setText(new Integer(serialConnection.getDelay()).toString());
 	}
 
 	private void initLayout() {
@@ -176,6 +186,12 @@ public class Settings extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		if (arg0.getSource() == okButton) {
+			serialConnection.setBaudRate(Integer.parseInt(baudText.getText()));
+			serialConnection.setDatabits(Integer.parseInt(dataText.getText()));
+			serialConnection.setDelay(Integer.parseInt(delayText.getText()));
+			serialConnection.setDevice(deviceText.getText());
+			serialConnection.setParityBit(Integer.parseInt(parityText.getText()));
+			serialConnection.setStopBit(Integer.parseInt(stopText.getText()));
 			setVisible(false);
 			dispose();
 		}
