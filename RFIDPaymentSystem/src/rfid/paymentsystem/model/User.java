@@ -164,7 +164,7 @@ public class User extends SQLConnection {
 		return transactions;
 	}
 
-	public double getBalance() {
+	public Double getBalance() {
 		return balance;
 	}
 

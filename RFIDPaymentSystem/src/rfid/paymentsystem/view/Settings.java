@@ -19,14 +19,24 @@ import rfid.paymentsystem.controller.SerialController;
 
 public class Settings extends JDialog implements ActionListener {
 
+	private static final long serialVersionUID = 3354223037760087885L;
+
 	private final JPanel contentPanel = new JPanel();
+
 	private JTextField deviceText;
+
 	private JTextField baudText;
+
 	private JTextField stopText;
+
 	private JTextField dataText;
+
 	private JTextField parityText;
+
 	private JTextField delayText;
-	JButton cancelButton, okButton;
+
+	private JButton cancelButton, okButton;
+
 	private SerialController serialConnection;
 
 	/**
@@ -39,7 +49,8 @@ public class Settings extends JDialog implements ActionListener {
 		baudText.setText(new Integer(serialConnection.getBaudRate()).toString());
 		stopText.setText(new Integer(serialConnection.getStopBit()).toString());
 		dataText.setText(new Integer(serialConnection.getDatabits()).toString());
-		parityText.setText(new Integer(serialConnection.getParityBit()).toString());
+		parityText.setText(new Integer(serialConnection.getParityBit())
+				.toString());
 		delayText.setText(new Integer(serialConnection.getDelay()).toString());
 	}
 
@@ -51,10 +62,12 @@ public class Settings extends JDialog implements ActionListener {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		GridBagLayout gbl_contentPanel = new GridBagLayout();
-		gbl_contentPanel.columnWidths = new int[] {0, 30, 0, 0};
-		gbl_contentPanel.rowHeights = new int[] {0, 0, 0, 0, 0, 50, 0, 0};
-		gbl_contentPanel.columnWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
-		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_contentPanel.columnWidths = new int[] { 0, 30, 0, 0 };
+		gbl_contentPanel.rowHeights = new int[] { 0, 0, 0, 0, 0, 50, 0, 0 };
+		gbl_contentPanel.columnWeights = new double[] { 0.0, 0.0, 1.0,
+				Double.MIN_VALUE };
+		gbl_contentPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0,
+				0.0, 0.0, Double.MIN_VALUE };
 		contentPanel.setLayout(gbl_contentPanel);
 		{
 			JLabel lblDevice = new JLabel("Device");
@@ -190,7 +203,8 @@ public class Settings extends JDialog implements ActionListener {
 			serialConnection.setDatabits(Integer.parseInt(dataText.getText()));
 			serialConnection.setDelay(Integer.parseInt(delayText.getText()));
 			serialConnection.setDevice(deviceText.getText());
-			serialConnection.setParityBit(Integer.parseInt(parityText.getText()));
+			serialConnection
+					.setParityBit(Integer.parseInt(parityText.getText()));
 			serialConnection.setStopBit(Integer.parseInt(stopText.getText()));
 			setVisible(false);
 			dispose();

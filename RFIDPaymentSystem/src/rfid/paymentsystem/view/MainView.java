@@ -27,21 +27,37 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import rfid.paymentsystem.controller.SerialController;
+import rfid.paymentsystem.controller.UserController;
+import rfid.paymentsystem.model.User;
 
 public class MainView extends JFrame implements ActionListener {
 
+	private static final long serialVersionUID = -1785352728380317442L;
+
 	private JPanel contentPane;
+
 	private JTextField txtId, txtName, txtAmount;
+
 	private JLabel lblCustomerName, lblAmount, lblSuccessMessage;
+
 	private JPanel panel, panel_1, panel_2;
+
 	private JButton btnPay, btnRecharge;
+
 	private JMenuBar menuBar;
+
 	private JMenu mnFile, mnEdit, mnDebug;
-	private JMenuItem mntmOpenConnection, mntmIsConnected, mntmCloseConnection,
-			mntmExit, mntmSettings, mnInsertId;
+
+	private JMenuItem mntmOpenConnection, mntmIsConnected, mntmCloseConnection;
+
+	private JMenuItem mntmExit, mntmSettings, mnInsertId;
+
 	private SerialController serialController;
+
 	private JLabel lblBalance;
+
 	private JTextField txtBalance;
+
 	private Component horizontalStrut_1;
 
 	/**
@@ -95,9 +111,14 @@ public class MainView extends JFrame implements ActionListener {
 
 			public void update() {
 				if (!txtId.getText().isEmpty()) {
-					//TODO: get Name from Id from DB
-					txtName.setText("Load Name from DB");
-					txtBalance.setText("Load Name from DB");
+					User user = UserController.getInstance().getUserByTagId(
+							txtId.getText());
+					if (user == null) {
+						// TODO: error von der view, weil nutzer nicht vorhanden
+						return;
+					}
+					txtName.setText(user.getName());
+					txtBalance.setText(user.getBalance().toString());
 					lblSuccessMessage.setBackground(Color.GREEN);
 					lblSuccessMessage.setText("Scan successful.");
 				} else {
@@ -119,13 +140,13 @@ public class MainView extends JFrame implements ActionListener {
 		txtName.setEditable(false);
 		panel.add(txtName);
 		txtName.setColumns(20);
-		
+
 		horizontalStrut_1 = Box.createHorizontalStrut(20);
 		panel.add(horizontalStrut_1);
-		
+
 		lblBalance = new JLabel("Balance");
 		panel.add(lblBalance);
-		
+
 		txtBalance = new JTextField();
 		panel.add(txtBalance);
 		txtBalance.setEditable(false);
@@ -226,10 +247,10 @@ public class MainView extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnPay) {
-			//TODO:Connect to DB
+			// TODO:Connect to DB
 		}
 		if (e.getSource() == btnRecharge) {
-			//TODO:Connect to DB
+			// TODO:Connect to DB
 		}
 		if (e.getSource() == mntmOpenConnection) {
 			try {
