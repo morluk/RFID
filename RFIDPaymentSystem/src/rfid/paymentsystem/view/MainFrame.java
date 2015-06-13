@@ -265,8 +265,7 @@ public class MainFrame extends JFrame implements ActionListener {
 			txtId.setText(id);
 			return;
 		}
-		Value value = ValueController.getInstance().getValueById(
-				Integer.parseInt(id));
+		Value value = ValueController.getInstance().getValueByTagId(id);
 		if (value != null) {
 			if (scanDialog != null) {
 				scanDialog.addValueTag(value.getValue());
