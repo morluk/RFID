@@ -51,9 +51,9 @@ public class SerialController {
 	 */
 	public synchronized void setReadTag(String readTag) {
 		if (this.readTag.equals(readTag)) {
-			counter++;
+			MainFrame.getInstance().publishCounter(++counter);
 		} else {
-			counter = 0;
+			counter = 1;
 			this.readTag = readTag;
 			MainFrame.getInstance().publishTag(readTag);
 		}

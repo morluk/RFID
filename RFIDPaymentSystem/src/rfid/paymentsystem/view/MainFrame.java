@@ -135,7 +135,7 @@ public class MainFrame extends JFrame implements ActionListener {
 					txtName.setText(user.getName());
 					txtBalance.setText(user.getBalance().toString());
 					lblSuccessMessage.setBackground(Color.GREEN);
-					lblSuccessMessage.setText("Scan successful.");
+					lblSuccessMessage.setText("Scan successful. Counter: 1");
 				} else {
 					txtName.setText("");
 					txtBalance.setText("");
@@ -277,6 +277,11 @@ public class MainFrame extends JFrame implements ActionListener {
 		txtId.setText("");
 		lblSuccessMessage.setBackground(Color.RED);
 		lblSuccessMessage.setText("Unknown ID scanned! - " + id);
+	}
+	
+	public void publishCounter(int counter) {
+		String msg = "Scan successful. Counter: " + counter;
+		lblSuccessMessage.setText(msg);
 	}
 
 	@Override
