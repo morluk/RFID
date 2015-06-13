@@ -28,7 +28,12 @@ public class ValueController extends SQLConnection {
 	}
 
 	public Value getValueById(int valueTagId) {
-		return values.get(valueTagId);
+		for (Value value : values.values()) {
+			if (value.getId() == valueTagId) {
+				return value;
+			}
+		}
+		return null;
 	}
 
 	@Override
