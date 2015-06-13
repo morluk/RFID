@@ -1,13 +1,22 @@
-package rfid.paymentsystem.seriell;
+package rfid.paymentsystem.controller;
 
+public class SerialController {
 
-public class SerialConnection {
-	
 	private int baudRate, stopBit, parityBit, databits, delay;
 	private String device;
 	private boolean connected;
-	
-	public SerialConnection() {
+
+	private static SerialController serialController;
+
+	public synchronized static SerialController getInstance() {
+		if (SerialController.serialController == null) {
+			SerialController.serialController = new SerialController();
+		}
+		return serialController;
+
+	}
+
+	private SerialController() {
 		baudRate = 9600;
 		stopBit = 1;
 		parityBit = 0;

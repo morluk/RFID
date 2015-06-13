@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import rfid.paymentsystem.seriell.SerialConnection;
+import rfid.paymentsystem.controller.SerialController;
 
 public class Settings extends JDialog implements ActionListener {
 
@@ -27,12 +27,12 @@ public class Settings extends JDialog implements ActionListener {
 	private JTextField parityText;
 	private JTextField delayText;
 	JButton cancelButton, okButton;
-	private SerialConnection serialConnection;
+	private SerialController serialConnection;
 
 	/**
 	 * Create the dialog.
 	 */
-	public Settings(SerialConnection conn) {
+	public Settings(SerialController conn) {
 		this.serialConnection = conn;
 		initLayout();
 		deviceText.setText(serialConnection.getDevice());
