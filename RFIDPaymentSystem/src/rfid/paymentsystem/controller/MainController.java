@@ -2,7 +2,7 @@ package rfid.paymentsystem.controller;
 
 import java.awt.EventQueue;
 
-import rfid.paymentsystem.view.MainView;
+import rfid.paymentsystem.view.MainFrame;
 
 public class MainController {
 
@@ -14,7 +14,7 @@ public class MainController {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainView frame = new MainView();
+					MainFrame frame = MainFrame.getInstance();
 					// frame.pack();
 					frame.setVisible(true);
 				} catch (Exception e) {

@@ -28,9 +28,11 @@ import javax.swing.event.DocumentListener;
 
 import rfid.paymentsystem.controller.SerialController;
 import rfid.paymentsystem.controller.UserController;
+import rfid.paymentsystem.controller.ValueController;
 import rfid.paymentsystem.model.User;
+import rfid.paymentsystem.model.Value;
 
-public class MainView extends JFrame implements ActionListener {
+public class MainFrame extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -1785352728380317442L;
 
@@ -60,10 +62,18 @@ public class MainView extends JFrame implements ActionListener {
 
 	private Component horizontalStrut_1;
 
-	/**
-	 * Create the frame.
-	 */
-	public MainView() {
+	private static MainFrame mainview;
+
+	private ScanDialog scanDialog;
+
+	public synchronized static MainFrame getInstance() {
+		if (MainFrame.mainview == null) {
+			MainFrame.mainview = new MainFrame();
+		}
+		return mainview;
+	}
+
+	private MainFrame() {
 		serialController = SerialController.getInstance();
 		initGui();
 		this.addWindowListener(new WindowAdapter() {
@@ -114,7 +124,12 @@ public class MainView extends JFrame implements ActionListener {
 					User user = UserController.getInstance().getUserByTagId(
 							txtId.getText());
 					if (user == null) {
-						// TODO: error von der view, weil nutzer nicht vorhanden
+						txtName.setText("");
+						txtBalance.setText("");
+						lblSuccessMessage.setBackground(Color.RED);
+						lblSuccessMessage.setText("User " + txtId.getText()
+								+ " not in DB");
+						txtId.setText("");
 						return;
 					}
 					txtName.setText(user.getName());
@@ -125,7 +140,7 @@ public class MainView extends JFrame implements ActionListener {
 					txtName.setText("");
 					txtBalance.setText("");
 					lblSuccessMessage.setBackground(Color.RED);
-					lblSuccessMessage.setText("Success Message");
+					lblSuccessMessage.setText("Empty String received");
 				}
 			}
 		});
@@ -244,13 +259,36 @@ public class MainView extends JFrame implements ActionListener {
 		System.exit(0);
 	}
 
+	public void publishTag(String id) {
+		User user = UserController.getInstance().getUserByTagId(id);
+		if (user != null) {
+			txtId.setText(id);
+			return;
+		}
+		Value value = ValueController.getInstance().getValueById(
+				Integer.parseInt(id));
+		if (value != null) {
+			if (scanDialog != null) {
+				scanDialog.addValueTag(value.getValue());
+				return;
+			}
+		}
+		txtName.setText("");
+		txtBalance.setText("");
+		txtId.setText("");
+		lblSuccessMessage.setBackground(Color.RED);
+		lblSuccessMessage.setText("Unknown ID scanned! - " + id);
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnPay) {
-			// TODO:Connect to DB
+			// TODO: make transaction with txtAmount number and txtId
 		}
 		if (e.getSource() == btnRecharge) {
-			// TODO:Connect to DB
+			scanDialog = new ScanDialog(txtId.getText());
+			scanDialog.setLocationRelativeTo(this);
+			scanDialog.setVisible(true);
 		}
 		if (e.getSource() == mntmOpenConnection) {
 			try {
@@ -282,15 +320,15 @@ public class MainView extends JFrame implements ActionListener {
 			closeOperation();
 		}
 		if (e.getSource() == mntmSettings) {
-			Settings dialog = new Settings(serialController);
+			SettingsDialog dialog = new SettingsDialog();
 			dialog.setLocationRelativeTo(this);
 			dialog.setVisible(true);
 		}
 		if (e.getSource() == mnInsertId) {
 			String id = (String) JOptionPane.showInputDialog(this,
 					"Which ID did you scan?", "Scanning ID...",
-					JOptionPane.PLAIN_MESSAGE, null, null, "neueTagId");
-			txtId.setText(id);
+					JOptionPane.PLAIN_MESSAGE, null, null, "lukasTagId");
+			serialController.setReadTag(id);
 		}
 	}
 

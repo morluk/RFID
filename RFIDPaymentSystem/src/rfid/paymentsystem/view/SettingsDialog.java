@@ -17,7 +17,7 @@ import javax.swing.border.EmptyBorder;
 
 import rfid.paymentsystem.controller.SerialController;
 
-public class Settings extends JDialog implements ActionListener {
+public class SettingsDialog extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = 3354223037760087885L;
 
@@ -42,8 +42,8 @@ public class Settings extends JDialog implements ActionListener {
 	/**
 	 * Create the dialog.
 	 */
-	public Settings(SerialController conn) {
-		this.serialConnection = conn;
+	public SettingsDialog() {
+		this.serialConnection = SerialController.getInstance();
 		initLayout();
 		deviceText.setText(serialConnection.getDevice());
 		baudText.setText(new Integer(serialConnection.getBaudRate()).toString());
