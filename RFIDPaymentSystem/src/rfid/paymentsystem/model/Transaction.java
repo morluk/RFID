@@ -5,8 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import rfid.paymentsystem.controller.ValueController;
-
 public class Transaction extends SQLConnection {
 
 	private Integer id;
@@ -15,9 +13,7 @@ public class Transaction extends SQLConnection {
 
 	private User user;
 
-	private Value value;
-
-	private boolean positiv;
+	private Double value;
 
 	public Transaction(int id, User user) {
 		this.id = id;
@@ -25,19 +21,14 @@ public class Transaction extends SQLConnection {
 		loadFromDatabase();
 	}
 
-	public Transaction(String name, User user, Value value, boolean isPositiv) {
+	public Transaction(String name, User user, Double value) {
 		this.user = user;
 		this.name = name;
 		this.value = value;
-		this.positiv = isPositiv;
 		insertIntoDatabase();
 	}
 
-	public boolean isPositiv() {
-		return positiv;
-	}
-
-	public Value getValue() {
+	public Double getValue() {
 		return value;
 	}
 
@@ -50,11 +41,8 @@ public class Transaction extends SQLConnection {
 
 			ResultSet result = statement.executeQuery();
 			if (result.next()) {
-				int valueTagId = result.getInt("valuetagid");
-				int isPositiv = result.getInt("ispositiv");
 				name = result.getString("name");
-				value = ValueController.getInstance().getValueById(valueTagId);
-				this.positiv = (isPositiv == 1 ? true : false);
+				value = Double.valueOf(result.getString("value"));
 			}
 			result.close();
 			statement.close();
@@ -67,12 +55,9 @@ public class Transaction extends SQLConnection {
 	protected void updateToDatabase() {
 		try {
 			PreparedStatement statement = connection
-					.prepareStatement("UPDATE trans SET name = ?, userid = ?, valuetagid = ?, ispositiv = ? WHERE id = ?");
+					.prepareStatement("UPDATE trans SET name = ? WHERE id = ?");
 			statement.setString(1, name);
-			statement.setInt(2, user.getId());
-			statement.setInt(3, value.getId());
-			statement.setInt(4, (positiv == true ? 1 : 0));
-			statement.setInt(5, id);
+			statement.setInt(2, id);
 			statement.execute();
 			statement.close();
 		} catch (SQLException e) {
@@ -83,14 +68,12 @@ public class Transaction extends SQLConnection {
 	@Override
 	protected void insertIntoDatabase() {
 		try {
-			PreparedStatement statement = connection
-					.prepareStatement(
-							"INSERT INTO trans (name, userid, valuetagid, ispositiv) VALUES (?, ?, ?, ?)",
-							Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement statement = connection.prepareStatement(
+					"INSERT INTO trans (name, userid, value) VALUES (?, ?, ?)",
+					Statement.RETURN_GENERATED_KEYS);
 			statement.setString(1, name);
 			statement.setInt(2, user.getId());
-			statement.setInt(3, value.getId());
-			statement.setInt(4, (positiv == true ? 1 : 0));
+			statement.setString(3, value.toString());
 			statement.executeUpdate();
 			ResultSet generatedKeys = statement.getGeneratedKeys();
 			if (generatedKeys.next()) {
@@ -105,8 +88,7 @@ public class Transaction extends SQLConnection {
 	@Override
 	public String toString() {
 		return "TRANSACTION=ID:" + id + "; Name:" + name + "; UserID:"
-				+ user.getId() + "; isPositiv:" + positiv + "\n"
-				+ value.toString();
+				+ user.getId() + "; Value:" + value.toString();
 	}
 
 }

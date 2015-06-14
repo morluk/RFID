@@ -133,7 +133,7 @@ public class MainFrame extends JFrame implements ActionListener {
 						return;
 					}
 					txtName.setText(user.getName());
-					txtBalance.setText(user.getBalance().toString());
+					refreshBalance();
 					lblSuccessMessage.setBackground(Color.GREEN);
 					lblSuccessMessage.setText("Scan successful. Counter: 1");
 				} else {
@@ -194,6 +194,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		panel_2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		btnPay = new JButton("Make Payment [-]");
+		btnPay.addActionListener(this);
 		panel_2.add(btnPay);
 
 		btnRecharge = new JButton("Make Deposit [+]");
@@ -278,7 +279,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		lblSuccessMessage.setBackground(Color.RED);
 		lblSuccessMessage.setText("Unknown ID scanned! - " + id);
 	}
-	
+
 	public void publishCounter(int counter) {
 		String msg = "Scan successful. Counter: " + counter;
 		lblSuccessMessage.setText(msg);
@@ -287,10 +288,35 @@ public class MainFrame extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnPay) {
-			// TODO: make transaction with txtAmount number and txtId
+			User user = UserController.getInstance().getUserByTagId(
+					txtId.getText());
+			if (user == null) {
+				// TODO: error von view, weil kein user eingescannt wurde
+				System.out
+						.println("//TODO: error von view, weil kein user eingescannt wurde");
+				return;
+			}
+			double amount = 0;
+			try {
+				amount = Double.parseDouble(txtAmount.getText());
+			} catch (Exception ex) {
+				// TODO: Error von der view weil amount ungueltig
+				System.out
+						.println("// TODO: Error von der view weil amount ungueltig");
+				return;
+			}
+			user.addTransaction("payment", -amount);
+			refreshBalance();
+			// TODO: transaction wurde betaetigt
 		}
 		if (e.getSource() == btnRecharge) {
-			scanDialog = new ScanDialog(txtId.getText());
+			if (UserController.getInstance().getUserByTagId(txtId.getText()) == null) {
+				// TODO: Error, noch kein nutzer eingelesen
+				System.out
+						.println("//TODO: Error, noch kein nutzer eingelesen");
+				return;
+			}
+			scanDialog = new ScanDialog(this, txtId.getText());
 			scanDialog.setLocationRelativeTo(this);
 			scanDialog.setVisible(true);
 		}
@@ -333,6 +359,14 @@ public class MainFrame extends JFrame implements ActionListener {
 					"Which ID did you scan?", "Scanning ID...",
 					JOptionPane.PLAIN_MESSAGE, null, null, "lukasTagId");
 			serialController.setReadTag(id);
+		}
+	}
+
+	public void refreshBalance() {
+		User user = UserController.getInstance()
+				.getUserByTagId(txtId.getText());
+		if (user != null) {
+			txtBalance.setText(user.getBalance().toString());
 		}
 	}
 

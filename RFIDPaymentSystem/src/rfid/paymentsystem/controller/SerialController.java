@@ -1,7 +1,6 @@
 package rfid.paymentsystem.controller;
 
 import jssc.SerialPort;
-import jssc.SerialPortException;
 import rfid.paymentsystem.view.MainFrame;
 
 public class SerialController {
@@ -17,7 +16,6 @@ public class SerialController {
 	static SerialPort serialPort;
 
 	private static SerialController serialController;
-	
 
 	public synchronized static SerialController getInstance() {
 		if (SerialController.serialController == null) {
@@ -47,6 +45,7 @@ public class SerialController {
 
 	/**
 	 * Sets ReadTag Member and publishes it to MainView
+	 * 
 	 * @param readTag
 	 */
 	public synchronized void setReadTag(String readTag) {
@@ -118,15 +117,15 @@ public class SerialController {
 	 * @return
 	 */
 	public boolean connect() {
-//		serialPort = new SerialPort(device);
-//		try {
-//			System.out.println("Port opened: " + serialPort.openPort());
-//			System.out.println("Params set: "
-//					+ serialPort.setParams(baudRate, databits, stopBit,
-//							parityBit));
-//		} catch (SerialPortException ex) {
-//			System.out.println(ex);
-//		}
+		// serialPort = new SerialPort(device);
+		// try {
+		// System.out.println("Port opened: " + serialPort.openPort());
+		// System.out.println("Params set: "
+		// + serialPort.setParams(baudRate, databits, stopBit,
+		// parityBit));
+		// } catch (SerialPortException ex) {
+		// System.out.println(ex);
+		// }
 		// TODO: check ReadersID - Setup reader
 		connected = true;
 		(new Thread(new SerialRunner(serialPort))).start();
@@ -134,11 +133,11 @@ public class SerialController {
 	}
 
 	public boolean close() {
-//		try {
-//			System.out.println("Port closed: " + serialPort.closePort());
-//		} catch (SerialPortException e) {
-//			e.printStackTrace();
-//		}
+		// try {
+		// System.out.println("Port closed: " + serialPort.closePort());
+		// } catch (SerialPortException e) {
+		// e.printStackTrace();
+		// }
 		readTag = "xxx";
 		connected = false;
 		return connected;
@@ -153,6 +152,7 @@ public class SerialController {
 	 * 
 	 */
 	public static class SerialRunner implements Runnable {
+
 		private SerialPort serialPort;
 
 		SerialRunner(SerialPort ser) {
@@ -161,25 +161,25 @@ public class SerialController {
 
 		@Override
 		public void run() {
-//			while (serialPort.isOpened()) {
-//				try {
-//					System.out
-//							.println("\"Hello Serial!!!\" successfully writen to port: "
-//									+ serialPort.writeBytes("Hello Serial!!!"
-//											.getBytes()));
-//					Thread.sleep(2 * delay);
-//					byte[] buffer = serialPort.readBytes();
-//					if (buffer != null) {
-//						System.out.println("Read from Serialport: "
-//								+ new String(buffer));
-//						SerialController.getInstance().setReadTag(
-//								new String(buffer));
-//						Thread.sleep(delay);
-//					}
-//				} catch (SerialPortException | InterruptedException ex) {
-//					System.out.println(ex);
-//				}
-//			}
+			// while (serialPort.isOpened()) {
+			// try {
+			// System.out
+			// .println("\"Hello Serial!!!\" successfully writen to port: "
+			// + serialPort.writeBytes("Hello Serial!!!"
+			// .getBytes()));
+			// Thread.sleep(2 * delay);
+			// byte[] buffer = serialPort.readBytes();
+			// if (buffer != null) {
+			// System.out.println("Read from Serialport: "
+			// + new String(buffer));
+			// SerialController.getInstance().setReadTag(
+			// new String(buffer));
+			// Thread.sleep(delay);
+			// }
+			// } catch (SerialPortException | InterruptedException ex) {
+			// System.out.println(ex);
+			// }
+			// }
 			while (SerialController.getInstance().isConnected()) {
 				try {
 					Thread.sleep(delay);

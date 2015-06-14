@@ -7,33 +7,37 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JList;
+
+import rfid.paymentsystem.controller.UserController;
+import rfid.paymentsystem.model.User;
 
 public class ScanDialog extends JDialog implements ActionListener {
 
-	private final JPanel contentPanel = new JPanel();
+	private static final long serialVersionUID = 5645801402508358382L;
 
-	private MainFrame mainFrame;
+	private final JPanel contentPanel = new JPanel();
 
 	private JButton cancelButton;
 
 	private JButton okButton;
 
 	private JTextArea txtArea;
-	
-	private String id;
-	
+
 	private double sum;
 
-	public ScanDialog(String id) {
-		this.id = id;
+	private MainFrame mainFrame;
+
+	private String userTagId;
+
+	public ScanDialog(MainFrame mainFrame, String userTagId) {
 		sum = 0;
-		mainFrame = MainFrame.getInstance();
+		this.mainFrame = mainFrame;
+		this.userTagId = userTagId;
 		initGUI();
 		txtArea.setText("0");
 	}
@@ -46,7 +50,8 @@ public class ScanDialog extends JDialog implements ActionListener {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		{
-			JLabel lblPleaseScanValue = new JLabel("Please Scan Value Tags and press OK");
+			JLabel lblPleaseScanValue = new JLabel(
+					"Please Scan Value Tags and press OK");
 			contentPanel.add(lblPleaseScanValue, BorderLayout.NORTH);
 		}
 		{
@@ -73,10 +78,10 @@ public class ScanDialog extends JDialog implements ActionListener {
 			}
 		}
 	}
-	
+
 	public void addValueTag(double value) {
 		sum += value;
-		txtArea.append("\n+ " + value + " = " + sum );
+		txtArea.append("\n+ " + value + " = " + sum);
 	}
 
 	@Override
@@ -86,7 +91,11 @@ public class ScanDialog extends JDialog implements ActionListener {
 			dispose();
 		}
 		if (e.getSource() == okButton) {
-			//TODO: make transaction with amount in DB to id
+			User user = UserController.getInstance().getUserByTagId(userTagId);
+			user.addTransaction("deposit", sum);
+			setVisible(false);
+			dispose();
+			mainFrame.refreshBalance();
 		}
 	}
 

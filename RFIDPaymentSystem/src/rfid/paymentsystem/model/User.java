@@ -151,12 +151,8 @@ public class User extends SQLConnection {
 
 	private void calculateBalance() {
 		for (Transaction trans : getAllTransactions()) {
-			Value value = trans.getValue();
-			if (trans.isPositiv()) {
-				balance += value.getValue();
-			} else {
-				balance -= value.getValue();
-			}
+			Double value = trans.getValue();
+			balance += value;
 		}
 	}
 
@@ -168,13 +164,9 @@ public class User extends SQLConnection {
 		return balance;
 	}
 
-	public void addTransaction(String name, Value value, boolean isPositiv) {
-		Transaction trans = new Transaction(name, this, value, isPositiv);
+	public void addTransaction(String name, Double value) {
+		Transaction trans = new Transaction(name, this, value);
 		transactions.add(trans);
-		if (isPositiv) {
-			balance += value.getValue();
-		} else {
-			balance -= value.getValue();
-		}
+		balance += value;
 	}
 }
