@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -74,6 +75,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	}
 
 	private MainFrame() {
+		setStyle();
 		serialController = SerialController.getInstance();
 		initGui();
 		this.addWindowListener(new WindowAdapter() {
@@ -81,6 +83,21 @@ public class MainFrame extends JFrame implements ActionListener {
 				closeOperation();
 			}
 		});
+	}
+
+	private void setStyle() {
+		try {
+			for (UIManager.LookAndFeelInfo laf : UIManager
+					.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(laf.getName())) {
+
+					UIManager.setLookAndFeel(laf.getClassName());
+
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void initGui() {
