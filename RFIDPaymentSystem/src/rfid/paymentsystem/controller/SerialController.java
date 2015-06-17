@@ -1,5 +1,13 @@
 package rfid.paymentsystem.controller;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import jssc.SerialPort;
 import rfid.paymentsystem.view.MainFrame;
 
@@ -16,6 +24,8 @@ public class SerialController {
 	static SerialPort serialPort;
 
 	private static SerialController serialController;
+	/*Key:Reader Command - Value:Expected Reader Response*/
+	private Map<String,String> setupCmd, readCmd;
 
 	public synchronized static SerialController getInstance() {
 		if (SerialController.serialController == null) {
@@ -33,6 +43,43 @@ public class SerialController {
 		device = "/dev/ttyUSB0";
 		connected = false;
 		readTag = "xxx";
+		readConfig("configFile");
+	}
+	
+	private void readConfig(String file) {
+		setupCmd = new HashMap<String,String>();
+		readCmd = new HashMap<String,String>();
+		File inputFile = new File(file);
+
+		BufferedReader in;
+		try {
+			in = new BufferedReader(new FileReader(inputFile)); // zeichenweise
+			String line;
+
+			while ((line = in.readLine()) != null) {
+				if (line.contains("#SETUP READER")) {
+					line = in.readLine();
+					while (!line.contains("#READ CMD")) {
+						String[] lineSplitted = line.split(";");
+						setupCmd.put(lineSplitted[0], lineSplitted[1]);
+						line = in.readLine();
+					}
+				} else {
+					String[] lineSplitted = line.split(";");
+					readCmd.put(lineSplitted[0], lineSplitted[1]);		
+				}
+			}
+		in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		//DEBUG
+//		for (Entry<String, String> key : setupCmd.entrySet()) {
+//			System.out.println("Key: " + key.getKey() +" Value: " + key.getValue());
+//		}
+//		for (Entry<String, String> key : readCmd.entrySet()) {
+//			System.out.println("Key: " + key.getKey() +" Value: " + key.getValue());
+//		}
 	}
 
 	public int getCounter() {
@@ -161,6 +208,7 @@ public class SerialController {
 
 		@Override
 		public void run() {
+			//TODO: read Cmd from Map
 			// while (serialPort.isOpened()) {
 			// try {
 			// System.out

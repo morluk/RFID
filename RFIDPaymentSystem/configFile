@@ -1,0 +1,8 @@
+#SETUP READER Format:<Reader Cmd>;<Expected Response>
+CMREV;OK
+CMRFC;OK
+CMSRT....5577;OK
+CMTIF;OK
+RDSRM....MAN;OK
+#READ CMD
+RDRSS....224;OK
