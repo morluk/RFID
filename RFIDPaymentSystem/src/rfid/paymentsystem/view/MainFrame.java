@@ -384,7 +384,7 @@ public class MainFrame extends JFrame implements ActionListener {
 				.getUserByTagId(txtId.getText());
 		if (user != null) {
 			txtBalance.setText(user.getBalance().toString());
-		}
+		} 
 	}
 
 }

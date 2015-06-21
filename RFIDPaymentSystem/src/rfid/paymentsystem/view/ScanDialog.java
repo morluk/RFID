@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -87,12 +88,14 @@ public class ScanDialog extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == cancelButton) {
+			JOptionPane.showMessageDialog(this, "Transaction canceled.");
 			setVisible(false);
 			dispose();
 		}
 		if (e.getSource() == okButton) {
 			User user = UserController.getInstance().getUserByTagId(userTagId);
 			user.addTransaction("deposit", sum);
+			JOptionPane.showMessageDialog(this, "Transaction complete.");
 			setVisible(false);
 			dispose();
 			mainFrame.refreshBalance();

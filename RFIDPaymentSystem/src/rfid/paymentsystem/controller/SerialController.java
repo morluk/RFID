@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import jssc.SerialPort;
+import jssc.SerialPortException;
 import rfid.paymentsystem.view.MainFrame;
 
 public class SerialController {
@@ -24,8 +25,8 @@ public class SerialController {
 	static SerialPort serialPort;
 
 	private static SerialController serialController;
-	/*Key:Reader Command - Value:Expected Reader Response*/
-	private Map<String,String> setupCmd, readCmd;
+	/* Key:Reader Command - Value:Expected Reader Response */
+	private Map<String, String> setupCmd, readCmd;
 
 	public synchronized static SerialController getInstance() {
 		if (SerialController.serialController == null) {
@@ -45,15 +46,15 @@ public class SerialController {
 		readTag = "xxx";
 		readConfig("configFile");
 	}
-	
+
 	private void readConfig(String file) {
-		setupCmd = new HashMap<String,String>();
-		readCmd = new HashMap<String,String>();
+		setupCmd = new HashMap<String, String>();
+		readCmd = new HashMap<String, String>();
 		File inputFile = new File(file);
 
 		BufferedReader in;
 		try {
-			in = new BufferedReader(new FileReader(inputFile)); // zeichenweise
+			in = new BufferedReader(new FileReader(inputFile));
 			String line;
 
 			while ((line = in.readLine()) != null) {
@@ -66,20 +67,13 @@ public class SerialController {
 					}
 				} else {
 					String[] lineSplitted = line.split(";");
-					readCmd.put(lineSplitted[0], lineSplitted[1]);		
+					readCmd.put(lineSplitted[0], lineSplitted[1]);
 				}
 			}
-		in.close();
+			in.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//DEBUG
-//		for (Entry<String, String> key : setupCmd.entrySet()) {
-//			System.out.println("Key: " + key.getKey() +" Value: " + key.getValue());
-//		}
-//		for (Entry<String, String> key : readCmd.entrySet()) {
-//			System.out.println("Key: " + key.getKey() +" Value: " + key.getValue());
-//		}
 	}
 
 	public int getCounter() {
@@ -173,9 +167,12 @@ public class SerialController {
 		// } catch (SerialPortException ex) {
 		// System.out.println(ex);
 		// }
-		// TODO: check ReadersID - Setup reader
+		// /*check ReadersID - Setup reader*/
+		// for (Entry<String, String> key : setupCmd.entrySet()) {
+		// ioSerial(key.getKey(), key.getValue());
+		// }
 		connected = true;
-		(new Thread(new SerialRunner(serialPort))).start();
+		(new Thread(new SerialRunner(serialPort, readCmd))).start();
 		return connected;
 	}
 
@@ -191,6 +188,31 @@ public class SerialController {
 	}
 
 	/**
+	 * writes cmd to SerialInterface and checks if result matches. Calls
+	 * SerialController.setReadTag(). Handles delays and SerialIO specifics.
+	 * 
+	 * @param cmd
+	 * @param result
+	 */
+	private static void ioSerial(String cmd, String result) {
+		try {
+			System.out.println("\"" + cmd + "\" successfully writen to port: "
+					+ serialPort.writeBytes(cmd.getBytes()));
+			Thread.sleep(2 * delay);
+			byte[] buffer = serialPort.readBytes();
+			if (buffer != null) {
+				System.out.println("Read from Serialport: "
+						+ new String(buffer));
+				// TODO: check response
+				SerialController.getInstance().setReadTag(new String(buffer));
+				Thread.sleep(delay);
+			}
+		} catch (SerialPortException | InterruptedException ex) {
+			System.out.println(ex);
+		}
+	}
+
+	/**
 	 * This thread is supposed to run in endless loop until connection closes.
 	 * Delays between reads and writes are handled within this function. Read
 	 * tags are submitted to SerialController
@@ -202,30 +224,18 @@ public class SerialController {
 
 		private SerialPort serialPort;
 
-		SerialRunner(SerialPort ser) {
+		private Map<String, String> readCmd;
+
+		SerialRunner(SerialPort ser, Map<String, String> readCmd) {
 			this.serialPort = ser;
+			this.readCmd = readCmd;
 		}
 
 		@Override
 		public void run() {
-			//TODO: read Cmd from Map
 			// while (serialPort.isOpened()) {
-			// try {
-			// System.out
-			// .println("\"Hello Serial!!!\" successfully writen to port: "
-			// + serialPort.writeBytes("Hello Serial!!!"
-			// .getBytes()));
-			// Thread.sleep(2 * delay);
-			// byte[] buffer = serialPort.readBytes();
-			// if (buffer != null) {
-			// System.out.println("Read from Serialport: "
-			// + new String(buffer));
-			// SerialController.getInstance().setReadTag(
-			// new String(buffer));
-			// Thread.sleep(delay);
-			// }
-			// } catch (SerialPortException | InterruptedException ex) {
-			// System.out.println(ex);
+			// for (Entry<String, String> key : readCmd.entrySet()) {
+			// ioSerial(key.getKey(), key.getValue());
 			// }
 			// }
 			while (SerialController.getInstance().isConnected()) {
