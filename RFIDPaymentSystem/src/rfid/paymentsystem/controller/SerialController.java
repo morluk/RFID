@@ -40,7 +40,7 @@ public class SerialController {
 		stopBit = 1;
 		parityBit = 0;
 		databits = 8;
-		delay = 2000;
+		delay = 1000;
 		device = "/dev/ttyUSB0";
 		connected = false;
 		readTag = "xxx";
@@ -158,30 +158,30 @@ public class SerialController {
 	 * @return
 	 */
 	public boolean connect() {
-		// serialPort = new SerialPort(device);
-		// try {
-		// System.out.println("Port opened: " + serialPort.openPort());
-		// System.out.println("Params set: "
-		// + serialPort.setParams(baudRate, databits, stopBit,
-		// parityBit));
-		// } catch (SerialPortException ex) {
-		// System.out.println(ex);
-		// }
-		// /*check ReadersID - Setup reader*/
-		// for (Entry<String, String> key : setupCmd.entrySet()) {
-		// ioSerial(key.getKey(), key.getValue());
-		// }
+		serialPort = new SerialPort(device);
+		try {
+			System.out.println("Port opened: " + serialPort.openPort());
+			System.out.println("Params set: "
+					+ serialPort.setParams(baudRate, databits, stopBit,
+							parityBit));
+		} catch (SerialPortException ex) {
+			System.out.println(ex);
+		}
+		/* check ReadersID - Setup reader */
+		for (Entry<String, String> key : setupCmd.entrySet()) {
+			ioSerial(key.getKey(), key.getValue());
+		}
 		connected = true;
 		(new Thread(new SerialRunner(serialPort, readCmd))).start();
 		return connected;
 	}
 
 	public boolean close() {
-		// try {
-		// System.out.println("Port closed: " + serialPort.closePort());
-		// } catch (SerialPortException e) {
-		// e.printStackTrace();
-		// }
+		try {
+			System.out.println("Port closed: " + serialPort.closePort());
+		} catch (SerialPortException e) {
+			e.printStackTrace();
+		}
 		readTag = "xxx";
 		connected = false;
 		return connected;
@@ -197,15 +197,15 @@ public class SerialController {
 	private static void ioSerial(String cmd, String result) {
 		try {
 			System.out.println("\"" + cmd + "\" successfully writen to port: "
-					+ serialPort.writeBytes(cmd.getBytes()));
-			Thread.sleep(2 * delay);
+					+ serialPort.writeBytes((cmd + "\r\n").getBytes()));
+			Thread.sleep(delay);
 			byte[] buffer = serialPort.readBytes();
 			if (buffer != null) {
 				System.out.println("Read from Serialport: "
 						+ new String(buffer));
 				// TODO: check response
 				SerialController.getInstance().setReadTag(new String(buffer));
-				Thread.sleep(delay);
+				//Thread.sleep(delay);
 			}
 		} catch (SerialPortException | InterruptedException ex) {
 			System.out.println(ex);
@@ -233,19 +233,19 @@ public class SerialController {
 
 		@Override
 		public void run() {
-			// while (serialPort.isOpened()) {
-			// for (Entry<String, String> key : readCmd.entrySet()) {
-			// ioSerial(key.getKey(), key.getValue());
-			// }
-			// }
-			while (SerialController.getInstance().isConnected()) {
-				try {
-					Thread.sleep(delay);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+			while (serialPort.isOpened()) {
+				for (Entry<String, String> key : readCmd.entrySet()) {
+					ioSerial(key.getKey(), key.getValue());
 				}
-				SerialController.getInstance().setReadTag("moritzTagId");
 			}
+			// while (SerialController.getInstance().isConnected()) {
+			// try {
+			// Thread.sleep(delay);
+			// } catch (InterruptedException e) {
+			// e.printStackTrace();
+			// }
+			// SerialController.getInstance().setReadTag("moritzTagId");
+			// }
 		}
 	}
 }
