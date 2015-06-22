@@ -7,7 +7,7 @@ public class SerialTest {
 	static SerialPort serialPort;
 
 	public static void main(String[] args) {
-		serialPort = new SerialPort("/dev/ttyACM1");
+		serialPort = new SerialPort("/dev/ttyUSB0");
 		try {
 			System.out.println("Port opened: " + serialPort.openPort());
 			System.out.println("Params set: "
@@ -16,14 +16,13 @@ public class SerialTest {
 			for (int i = 0; i < 20; i++) {
 				System.out
 						.println("\"Hello Serial!!!\" successfully writen to port: "
-								+ serialPort.writeBytes("Hello Serial!!!"
+								+ serialPort.writeBytes("RDRSS....224\r\n"
 										.getBytes()));
-				Thread.sleep(4000);
+				Thread.sleep(1000);
 				byte[] buffer = serialPort.readBytes();
 				if (buffer != null) {
 					System.out.println("Read from Serialport: "
 							+ new String(buffer));
-					Thread.sleep(2000);
 				}
 			}
 
