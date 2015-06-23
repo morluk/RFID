@@ -104,7 +104,8 @@ public class SerialController {
 			MainFrame.getInstance().publishCounter(++counter);
 		} else {
 			counter = 1;
-			this.readTag = readTag;
+			/* use ONLY first 4 chars from ID without Header <OK0057 AFFE0042474C7A980000000000000000000000000000000000000000> -> <AFFE> */
+			this.readTag = readTag.substring(readTag.indexOf(' ')+1,readTag.indexOf(' ')+5);
 			MainFrame.getInstance().publishTag(readTag);
 		}
 	}
@@ -228,7 +229,7 @@ public class SerialController {
 				}
 				if (setTag) {
 					SerialController.getInstance().setReadTag(
-							new String(buffer));
+							response);
 				}
 			}
 		} catch (SerialPortException | InterruptedException ex) {
