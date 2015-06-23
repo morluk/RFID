@@ -12,6 +12,11 @@ import jssc.SerialPort;
 import jssc.SerialPortException;
 import rfid.paymentsystem.view.MainFrame;
 
+/**
+ * Controlls handling of SerialPort. Uses jSSC Library and can be used under Win/Linux/Mac.
+ * @author moritz
+ *
+ */
 public class SerialController {
 
 	private int baudRate, stopBit, parityBit, databits, counter;
@@ -47,6 +52,11 @@ public class SerialController {
 		readConfig("configFile");
 	}
 
+	/**
+	 * Reads congFile with specific RFIDReader commands.
+	 * 
+	 * @param file
+	 */
 	private void readConfig(String file) {
 		setupCmd = new HashMap<String, String>();
 		readCmd = new HashMap<String, String>();
@@ -169,7 +179,7 @@ public class SerialController {
 		}
 		/* check ReadersID - Setup reader */
 		for (Entry<String, String> key : setupCmd.entrySet()) {
-			ioSerial(key.getKey(), key.getValue());
+			ioSerial(key.getKey(), key.getValue(), false);
 		}
 		connected = true;
 		(new Thread(new SerialRunner(serialPort, readCmd))).start();
@@ -188,24 +198,38 @@ public class SerialController {
 	}
 
 	/**
-	 * writes cmd to SerialInterface and checks if result matches. Calls
-	 * SerialController.setReadTag(). Handles delays and SerialIO specifics.
+	 * Writes cmd to SerialPort. Reads response from SerialPort and checks if it
+	 * matches result. If setTag = true, setTag() will be called. -> configCmds
+	 * dont need to be setted as tags.
 	 * 
 	 * @param cmd
 	 * @param result
+	 * @param callGui
 	 */
-	private static void ioSerial(String cmd, String result) {
+	private static void ioSerial(String cmd, String result, boolean setTag) {
 		try {
 			System.out.println("\"" + cmd + "\" successfully writen to port: "
 					+ serialPort.writeBytes((cmd + "\r\n").getBytes()));
 			Thread.sleep(delay);
 			byte[] buffer = serialPort.readBytes();
 			if (buffer != null) {
-				System.out.println("Read from Serialport: "
-						+ new String(buffer));
-				// TODO: check response
-				SerialController.getInstance().setReadTag(new String(buffer));
-				//Thread.sleep(delay);
+				String response = new String(buffer);
+				System.out.println("Read from Serialport: " + response);
+				/*Check Response and inform Gui*/
+				if (!response.startsWith(result)) {
+					System.out.println("Error from Reader.");
+					if (setTag) {
+						SerialController.getInstance().setReadTag(
+								"No Tag Present.");
+					} else {
+						SerialController.getInstance().setReadTag(
+								"Error from Reader.");
+					}
+				}
+				if (setTag) {
+					SerialController.getInstance().setReadTag(
+							new String(buffer));
+				}
 			}
 		} catch (SerialPortException | InterruptedException ex) {
 			System.out.println(ex);
@@ -214,8 +238,7 @@ public class SerialController {
 
 	/**
 	 * This thread is supposed to run in endless loop until connection closes.
-	 * Delays between reads and writes are handled within this function. Read
-	 * tags are submitted to SerialController
+	 * calls ioSerial() with all readCmd entries.
 	 * 
 	 * @author moritz
 	 * 
@@ -235,9 +258,10 @@ public class SerialController {
 		public void run() {
 			while (serialPort.isOpened()) {
 				for (Entry<String, String> key : readCmd.entrySet()) {
-					ioSerial(key.getKey(), key.getValue());
+					ioSerial(key.getKey(), key.getValue(), true);
 				}
 			}
+			/* Debug */
 			// while (SerialController.getInstance().isConnected()) {
 			// try {
 			// Thread.sleep(delay);

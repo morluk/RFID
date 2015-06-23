@@ -33,6 +33,12 @@ import rfid.paymentsystem.controller.ValueController;
 import rfid.paymentsystem.model.User;
 import rfid.paymentsystem.model.Value;
 
+/**
+ * Main GUI interface. Uses Singleton pattern.
+ * 
+ * @author moritz
+ *
+ */
 public class MainFrame extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -1785352728380317442L;
@@ -277,6 +283,11 @@ public class MainFrame extends JFrame implements ActionListener {
 		System.exit(0);
 	}
 
+	/**
+	 * Is called from SerialController when Tag has changed.
+	 * 
+	 * @param id
+	 */
 	public void publishTag(String id) {
 		User user = UserController.getInstance().getUserByTagId(id);
 		if (user != null) {
@@ -297,6 +308,11 @@ public class MainFrame extends JFrame implements ActionListener {
 		lblSuccessMessage.setText("Unknown ID scanned! - " + id);
 	}
 
+	/**
+	 * Is called from SerialController when Tag hasent changed.
+	 * 
+	 * @param counter
+	 */
 	public void publishCounter(int counter) {
 		String msg = "Scan successful. Counter: " + counter;
 		lblSuccessMessage.setText(msg);
@@ -309,8 +325,8 @@ public class MainFrame extends JFrame implements ActionListener {
 					txtId.getText());
 			if (user == null) {
 				JOptionPane.showMessageDialog(this, "Error - Scan User first.");
-//				System.out
-//						.println("error von view, weil kein user eingescannt wurde");
+				// System.out
+				// .println("error von view, weil kein user eingescannt wurde");
 				return;
 			}
 			double amount = 0;
@@ -318,8 +334,8 @@ public class MainFrame extends JFrame implements ActionListener {
 				amount = Double.parseDouble(txtAmount.getText());
 			} catch (Exception ex) {
 				JOptionPane.showMessageDialog(this, "Error - Invalid amount.");
-//				System.out
-//						.println("Error von der view weil amount ungueltig");
+				// System.out
+				// .println("Error von der view weil amount ungueltig");
 				return;
 			}
 			user.addTransaction("payment", -amount);
@@ -329,8 +345,8 @@ public class MainFrame extends JFrame implements ActionListener {
 		if (e.getSource() == btnRecharge) {
 			if (UserController.getInstance().getUserByTagId(txtId.getText()) == null) {
 				JOptionPane.showMessageDialog(this, "Error. Scan User first.");
-//				System.out
-//						.println("Error, noch kein nutzer eingelesen");
+				// System.out
+				// .println("Error, noch kein nutzer eingelesen");
 				return;
 			}
 			scanDialog = new ScanDialog(this, txtId.getText());
@@ -379,12 +395,15 @@ public class MainFrame extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * Used to refresh Balance from Database. E.g. when payment is complete.
+	 */
 	public void refreshBalance() {
 		User user = UserController.getInstance()
 				.getUserByTagId(txtId.getText());
 		if (user != null) {
 			txtBalance.setText(user.getBalance().toString());
-		} 
+		}
 	}
 
 }
