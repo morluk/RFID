@@ -1,0 +1,5 @@
+\select@language {ngerman}
+\contentsline {section}{\numberline {1}Installation und unterst\IeC {\"u}tzte Hardware}{1}
+\contentsline {section}{\numberline {2}Benutzerf\IeC {\"u}hrung und Funktionen}{1}
+\contentsline {section}{\numberline {3}Beschreibung der Realisierung mittels UML Klassendiagrammen}{1}
+\contentsline {section}{\numberline {4}Anhang}{1}
