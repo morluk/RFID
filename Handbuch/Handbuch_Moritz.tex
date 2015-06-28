@@ -178,7 +178,7 @@ Einstellungen abgerufen und geändert werden.
 Hier sind alle Einstellungen der seriellen Schnittstelle vorzunehmen.
 ~\newline
 \section{Beschreibung der Realisierung mittels UML Klassendiagrammen}
--> kurz Ablauf der Kommunikation MVC erklären
+Das Programm ist nach dem Paradigma des Model-View-Controller Patterns aufgebaut. Die meisten Klassen des Controllers und der View sind als Singletonpattern realisert. Daher erfolt die Referenzübergabe über den Aufruf getInstance() der jeweiligen Klasse. Das Model braucht als Einzige Zugriff auf die Datenbank und ist daher von SQLConnection abgeleitet.
 
 \section{Anhang}
 \begin{figure}[htb] \centering

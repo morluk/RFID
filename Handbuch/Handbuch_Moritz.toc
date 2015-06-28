@@ -1,5 +1,10 @@
 \select@language {ngerman}
-\contentsline {section}{\numberline {1}Installation und unterst\IeC {\"u}tzte Hardware}{1}
-\contentsline {section}{\numberline {2}Benutzerf\IeC {\"u}hrung und Funktionen}{1}
-\contentsline {section}{\numberline {3}Beschreibung der Realisierung mittels UML Klassendiagrammen}{1}
-\contentsline {section}{\numberline {4}Anhang}{1}
+\contentsline {section}{\numberline {1}Installation und unterst\IeC {\"u}tzte Hardware}{2}
+\contentsline {subsection}{\numberline {1.1}Installation und Starten des Programms}{2}
+\contentsline {subsection}{\numberline {1.2}Bibliotheken und Datenbank}{2}
+\contentsline {subsection}{\numberline {1.3}Konfigurationsdatei}{2}
+\contentsline {subsection}{\numberline {1.4}Betriebssystem}{2}
+\contentsline {subsection}{\numberline {1.5}Reader-Board}{2}
+\contentsline {section}{\numberline {2}Benutzerf\IeC {\"u}hrung und Funktionen}{3}
+\contentsline {section}{\numberline {3}Beschreibung der Realisierung mittels UML Klassendiagrammen}{5}
+\contentsline {section}{\numberline {4}Anhang}{5}
