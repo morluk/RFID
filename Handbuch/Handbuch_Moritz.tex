@@ -64,43 +64,119 @@
 
 \begin{document}
 \maketitle
+~\newline
+\newline
+\newline
+\newline
+\newline
 \tableofcontents
+\newpage
 \section{Installation und unterstützte Hardware}
-
--> welches BS
--> welches Reader-Bord
--> benötigte libs und packete (jSSC, sqlite3)
--> Erklärung config Datei
-
+\subsection{Installation und Starten des Programms}
+Um das System zu installieren, genügt es, den Ordner
+\textit{AbgabeProtokoll/JarExport/} auf das eigene Betriebssystem zu kopieren
+und die Datei \textit{CashRegister.jar} zu starten. Diese öffnet dann direkt das
+User-Interface des Programms. Wichtig ist, dass eine JRE installiert ist, da
+sonst \textit{CashRegister.jar} nicht gestartet werden kann. Weitere genutzte
+Bibliotheken wie \textit{jSSC} oder \textit{sqlite3} müssen nicht manuell
+installiert werden, da diese bereits im \textit{.jar} Paket liegen und auch dort
+referenziert werden.
+\subsection{Bibliotheken und Datenbank}
+\textit{jSSC} ist für das Lesen und Schreiben einer
+seriellen Verbindung und \textit{sqlite3} für das Lesen und Schreiben einer
+Datenbank. Die Datenbank für das System befindet sich in dem Ordner
+\textit{AbgabeProtokoll/JarExport/database/} und kann bei Bedarf manuell mit
+einem Datenbank-Programm wie z.B. dem passenden sqlitebrowser
+(\textit{http://sqlitebrowser.org/}) geöffnet und beschrieben werden. Die
+Datenbank umfasst alle User mit Namen und einer passenden Tag-ID, um sie später
+einem passenden RFID-Tag zuordnen zu können, Transactions, welche alle
+getätigten Transaktionen in Bezug auf ein User enthält und Values, welche die
+Geldscheine anhand weiterer RFID-Tags simuliert und jeweils einen Betrag und 
+eine Tag-ID enthält. 
+\subsection{Konfigurationsdatei}
+Weiter umfasst das Programm eine Konfigrationsdatei
+(\textit{AbgabeProtokoll/JarExport/configFile}), welche die Befehle für die
+serielle Schnittstelle enthält. Befehl und zu erwartende Antwort sind durch ein
+Semikolon getrennt. Die Datei enthält die Befehle, welche bei Start
+des Programms als Setup an die serielle Schnittstelle geschickt werden und die
+Befehle die benötigt werden um einen RFID-Tag auszulesen. Die zu erwartende
+Antwort wird dabei jeweils mit der zurückgekommenen Antwort verglichen.
+\subsection{Betriebssystem}
+Das Programm wurde unter Linux entwickelt und getestet, kann jedoch
+plattformunabhängig unter jedem Betriebssystem mit einer funktionsfähigen JRE
+gestartet werden, da sämtliche Bibliotheken selbst im \textit{.jar} Paket liegen
+und diese ebenfalls platformunabhängig sind.
+\subsection{Reader-Board}
+Um RFID-Tags zu lesen, wurde das \textit{Atmel ATA 2270-EK1} benutzt. Da ein
+Bezahlsystem auf keine hohen Reichweiten ausgelegt sein soll, entschieden wir
+uns bei dem Vergleich eines LF- beziehungsweise HF-Systems für Ersteres. Auf die
+Konfiguration und Installation des \textit{Atmel ATA 2270-EK1} wird hier nun
+nicht weiter eingegangen, da dies detailert in Termin 3 des Praktikums
+durchgeführt wurde.
 \section{Benutzerführung und Funktionen}
--> kurze Erklärung zu den Views
-
-\begin{figure}[htb] \centering
+Abbildung \ref{snapshot1} zeigt den erfolgreich eingelesenen Tag-ID
+\textit{moritzTagID}, welcher im Feld \textit{Customer ID} nochmals
+dargestellt ist. Weiterhin ist der Name in dem Feld \textit{Name} und der
+aktuelle Kontostand in \textit{Balance} zu sehen. Dieser beträgt in diesem Fall
+zurzeit 0. Das grüne Label unten weist hinzukommend auf das erfolgreiche
+Einlesen und Erkennen hin. \textit{Counter} zeigt, wie oft derselbe Tag hintereinander
+eingelesen wurde, falls dieser sich länger in der Reichweite des Lesegerätes
+befindet.
+\begin{center}
 \includegraphics[height=5cm,keepaspectratio]{snapshot1.png}
-\caption{}
-\end{figure}
-
-\begin{figure}[htb] \centering
+\captionof{figure}{Tag-ID \textit{moritzTagID} wurde eingelesen}
+\label{snapshot1}
+\end{center}
+~\newline
+In Abbildung \ref{snapshot2} wurde um Geld einzuzahlen zuvor auf \textit{Make
+Deposit} geklickt. In diesem Beispiel wurden Value-Tags mit 20.0 und 5.0
+hintereinander eingelesen. Wie zu sehen ist, werden diese direkt summiert. Wird
+die Aktion mit einem Klick auf \textit{Ok} bestätigt, wird die Transaktion
+ausgeführt und anschließend in der Datenbank gespeichert.
+\begin{center}
 \includegraphics[height=5cm,keepaspectratio]{snapshot2.png}
-\caption{}
-\end{figure}
-
-\begin{figure}[htb] \centering
+\captionof{figure}{Make Desposit}
+\label{snapshot2}
+\end{center}
+\begin{center}
 \includegraphics[height=5cm,keepaspectratio]{snapshot3.png}
-\caption{}
-\end{figure}
-
-\begin{figure}[htb] \centering
+\captionof{figure}{Make Payment}
+\label{snapshot3}
+\end{center}
+Abbildung \ref{snapshot3} zeigt das Gegenteil zu Abbildung \ref{snapshot2}. Hier
+wird nun Geld ausgezahlt, indem der Benutzer seinen gewünschten Betrag in das
+Feld \textit{Amount} einträgt und anschließend mit \textit{Make Payment} die
+Transaktion bestätigt. Der Betrag wird dann vom Konto abgezogen und in die
+Datenbank gespeichert.
+\newline
+\newline
+In Abbildung \ref{snapshot4} wurde ein Tag eingescannt, dessen ID der Datenbank
+beziehungsweise dem Programm nicht bekannt ist. Somit wird im unteren Feld in
+rot bestätigt, dass es sich hier um eine unbekannte ID handelt. \textit{Make
+Deposit} und \textit{Make Payment} hat dann keine Funktion.
+\begin{center}
 \includegraphics[height=5cm,keepaspectratio]{snapshot4.png}
-\caption{}
-\end{figure}
-
-\begin{figure}[htb] \centering
+\captionof{figure}{Unbekannte Tag-ID}
+\label{snapshot4}
+\end{center}
+~\newline
+In der Menü-Leiste kann unter \textit{File} die Verbindung gestartet, getrennt
+und überprüft werden. \textit{Debug} gibt die Möglichkeit eine Tag-ID
+einzugeben, um so die Funktionsfähigkeit des Programms zu kontrollieren, ohne einen echten
+Reader anschließend zu müssen.
+\newline
+\textit{ACHTUNG: Dies ist momentan nicht funktionsfähig, da das Programm auf
+die Nutzung im Praktikum spezialisiert wurde.}
+\newline
+Unter \textit{Edit} können die in Abbildung \ref{snapshot5} gezeigen
+Einstellungen abgerufen und geändert werden.
+\begin{center}
 \includegraphics[height=5cm,keepaspectratio]{snapshot5.png}
-\caption{}
-\end{figure}
-
-
+\captionof{figure}{Settings}
+\label{snapshot5}
+\end{center}
+Hier sind alle Einstellungen der seriellen Schnittstelle vorzunehmen.
+~\newline
 \section{Beschreibung der Realisierung mittels UML Klassendiagrammen}
 -> kurz Ablauf der Kommunikation MVC erklären
 
