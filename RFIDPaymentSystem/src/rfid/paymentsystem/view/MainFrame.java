@@ -289,17 +289,20 @@ public class MainFrame extends JFrame implements ActionListener {
 	 * @param id
 	 */
 	public void publishTag(String id) {
+		if (scanDialog != null && scanDialog.isVisible()) {
+			Value value = ValueController.getInstance().getValueByTagId(id);
+			if (value != null) {
+				if (scanDialog != null) {
+					scanDialog.addValueTag(value.getValue());
+					return;
+				}
+			}
+			return;
+		}
 		User user = UserController.getInstance().getUserByTagId(id);
 		if (user != null) {
 			txtId.setText(id);
 			return;
-		}
-		Value value = ValueController.getInstance().getValueByTagId(id);
-		if (value != null) {
-			if (scanDialog != null) {
-				scanDialog.addValueTag(value.getValue());
-				return;
-			}
 		}
 		txtName.setText("");
 		txtBalance.setText("");
@@ -314,6 +317,9 @@ public class MainFrame extends JFrame implements ActionListener {
 	 * @param counter
 	 */
 	public void publishCounter(int counter) {
+		if (scanDialog != null && scanDialog.isVisible()) {
+			return;
+		}
 		String msg = "Scan successful. Counter: " + counter;
 		lblSuccessMessage.setText(msg);
 	}

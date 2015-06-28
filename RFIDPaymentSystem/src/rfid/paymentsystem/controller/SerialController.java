@@ -45,7 +45,7 @@ public class SerialController {
 		stopBit = 1;
 		parityBit = 0;
 		databits = 8;
-		delay = 1000;
+		delay = 300;
 		device = "/dev/ttyUSB0";
 		connected = false;
 		readTag = "xxx";
@@ -100,13 +100,14 @@ public class SerialController {
 	 * @param readTag
 	 */
 	public synchronized void setReadTag(String readTag) {
-		if (this.readTag.equals(readTag)) {
+		String readTagTmp = readTag.substring(readTag.indexOf(' ')+1,readTag.indexOf(' ')+5);
+		if (this.readTag.equals(readTagTmp)) {
 			MainFrame.getInstance().publishCounter(++counter);
 		} else {
 			counter = 1;
+			this.readTag = readTagTmp;
 			/* use ONLY first 4 chars from ID without Header <OK0057 AFFE0042474C7A980000000000000000000000000000000000000000> -> <AFFE> */
-			this.readTag = readTag.substring(readTag.indexOf(' ')+1,readTag.indexOf(' ')+5);
-			MainFrame.getInstance().publishTag(readTag);
+			MainFrame.getInstance().publishTag(readTagTmp);
 		}
 	}
 
