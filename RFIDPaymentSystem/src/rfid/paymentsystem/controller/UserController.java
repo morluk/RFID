@@ -9,6 +9,11 @@ import java.util.Map;
 import rfid.paymentsystem.model.SQLConnection;
 import rfid.paymentsystem.model.User;
 
+/**
+ * @author lukas
+ * Loads all Users from database.
+ * Provide functions to get a specific User.
+ */
 public class UserController extends SQLConnection {
 
 	Map<String, User> users;

@@ -5,6 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * @author lukas
+ * Value represents and simulates money
+ */
 public class Value extends SQLConnection {
 
 	private Integer id;

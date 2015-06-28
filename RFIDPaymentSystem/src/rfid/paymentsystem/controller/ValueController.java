@@ -9,6 +9,10 @@ import java.util.Map;
 import rfid.paymentsystem.model.SQLConnection;
 import rfid.paymentsystem.model.Value;
 
+/**
+ * @author lukas Read all Values from databse and provides functions to get
+ *         specific Values.
+ */
 public class ValueController extends SQLConnection {
 
 	Map<String, Value> values;
